@@ -1,6 +1,7 @@
 package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.CollectionUtils;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -24,7 +25,7 @@ public class TestServiceImpl implements TestService {
             ioService.printFormattedLine("Question %d: %s", i + 1, question.text());
 
             List<Answer> answers = question.answers();
-            if (answers != null && !answers.isEmpty()) {
+            if (!CollectionUtils.isEmpty(answers)) {
                 for (int j = 0; j < answers.size(); j++) {
                     Answer answer = answers.get(j);
                     ioService.printFormattedLine("  %d. %s", j + 1, answer.text());

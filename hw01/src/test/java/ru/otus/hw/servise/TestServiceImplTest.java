@@ -12,7 +12,12 @@ import ru.otus.hw.service.TestServiceImpl;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 class TestServiceImplTest {
     private IOService ioService;
