@@ -20,37 +20,46 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public TestResult executeTestFor(Student student) {
-        ioService.printLine("");
-        ioService.printFormattedLine("Please answer the questions below%n");
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
-        int questionNumber = 1;
+        int questionCount = questions.size();
+        boolean isNoneAnswers = false;
 
-        ioService.printLine("13 questions with 4 answer options, but only one is correct. " +
+        for (int questionNumber = 0; questionNumber < questionCount; questionNumber++) {
+            List<Answer> answers = questions.get(questionNumber).answers();
+            if (CollectionUtils.isEmpty(answers)) {
+                ioService.printLine("Error");
+                ioService.printLine("  Question " + ++questionNumber + ": No answers available.");
+                isNoneAnswers = true;
+            }
+        }
+        if (isNoneAnswers) {
+            return testResult;
+        }
+
+        ioService.printLine("");
+        ioService.printFormattedLine("Please answer the questions below%n");
+        ioService.printLine(questionCount + " questions with one correct answer. " +
                 "After each question, enter the number of the correct answer.\n");
 
-        for (var question : questions) {
-            var isAnswerValid = false; // Задать вопрос, получить ответ
-            ioService.printFormattedLine("Question %d: %s", questionNumber, question.text());
+        for (int questionNumber = 0; questionNumber < questionCount; questionNumber++) {
+            var isAnswerValid = false;
+            ioService.printFormattedLine("Question %d: %s", questionNumber + 1,
+                    questions.get(questionNumber).text());
 
-            List<Answer> answers = question.answers();
-            if (!CollectionUtils.isEmpty(answers)) {
-                for (int answerNumber = 0; answerNumber < answers.size(); answerNumber++) {
-                    Answer answer = answers.get(answerNumber);
-                    ioService.printFormattedLine("  %d. %s", answerNumber + 1, answer.text());
-                }
-            } else {
-                ioService.printLine("  No answers available");
+            List<Answer> answers = questions.get(questionNumber).answers();
+            for (int answerNumber = 0; answerNumber < answers.size(); answerNumber++) {
+                Answer answer = answers.get(answerNumber);
+                ioService.printFormattedLine("  %d. %s", answerNumber + 1, answer.text());
             }
 
-            int selectedAnswer = ioService.readIntForRangeWithPrompt(1, 4,
+            int selectedAnswer = ioService.readIntForRangeWithPrompt(1, answers.size(),
                     "Enter the correct answer number",
                     "There is no such answer, so enter it again.");
 
             isAnswerValid = answers.get(selectedAnswer - 1).isCorrect();
 
-            testResult.applyAnswer(question, isAnswerValid);
-            questionNumber++;
+            testResult.applyAnswer(questions.get(questionNumber), isAnswerValid);
         }
         return testResult;
     }
