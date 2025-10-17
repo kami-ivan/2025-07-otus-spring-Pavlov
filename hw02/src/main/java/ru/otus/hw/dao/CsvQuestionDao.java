@@ -4,9 +4,10 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.otus.hw.config.AppProperties;
+import org.springframework.util.CollectionUtils;
 import ru.otus.hw.config.TestFileNameProvider;
 import ru.otus.hw.dao.dto.QuestionDto;
+import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
 import ru.otus.hw.exceptions.QuestionReadException;
 
@@ -34,12 +35,27 @@ public class CsvQuestionDao implements QuestionDao {
                     .withIgnoreLeadingWhiteSpace(true)
                     .build();
 
-            return csvToBean.parse().stream()
+            List<Question> questions = csvToBean.parse().stream()
                     .map(QuestionDto::toDomainObject)
                     .toList();
+            if (isFullFilledQuestions(questions)) {
+                return questions;
+            } else {
+                throw new Exception("There are no filled questions");
+            }
 
         } catch (Exception e) {
             throw new QuestionReadException("Error reading questions file", e);
         }
+    }
+
+    private boolean isFullFilledQuestions(List<Question> questions) {
+        for (Question question : questions) {
+            List<Answer> answers = question.answers();
+            if (CollectionUtils.isEmpty(answers)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

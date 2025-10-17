@@ -10,9 +10,15 @@ import ru.otus.hw.domain.Student;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-class TestServiceImplTest {
+
+class TestServiceTest {
     private IOService ioService;
     private QuestionDao questionDao;
     private TestService testService;
@@ -69,23 +75,6 @@ class TestServiceImplTest {
         verify(questionDao, times(1)).findAll();
     }
 
-    @Test
-    void shouldHandleQuestionWithoutAnswers() {
-        List<Question> questions = List.of(
-                new Question("Empty question?", null)
-        );
-
-        when(questionDao.findAll()).thenReturn(questions);
-
-        testService.executeTestFor(student);
-
-        InOrder inOrder = inOrder(ioService);
-
-        inOrder.verify(ioService).printLine("Error");
-        inOrder.verify(ioService).printLine("  Question 1: No answers available.");
-
-        verify(questionDao, times(1)).findAll();
-    }
 
     @Test
     void shouldPrintNothingWhenNoQuestions() {

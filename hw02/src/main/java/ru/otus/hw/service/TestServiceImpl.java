@@ -23,19 +23,7 @@ public class TestServiceImpl implements TestService {
         var questions = questionDao.findAll();
         var testResult = new TestResult(student);
         int questionCount = questions.size();
-        boolean isNoneAnswers = false;
 
-        for (int questionNumber = 0; questionNumber < questionCount; questionNumber++) {
-            List<Answer> answers = questions.get(questionNumber).answers();
-            if (CollectionUtils.isEmpty(answers)) {
-                ioService.printLine("Error");
-                ioService.printLine("  Question " + ++questionNumber + ": No answers available.");
-                isNoneAnswers = true;
-            }
-        }
-        if (isNoneAnswers) {
-            return testResult;
-        }
 
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below%n");
