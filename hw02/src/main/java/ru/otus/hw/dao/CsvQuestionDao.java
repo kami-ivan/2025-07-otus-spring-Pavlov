@@ -41,7 +41,7 @@ public class CsvQuestionDao implements QuestionDao {
             if (isFullFilledQuestions(questions)) {
                 return questions;
             } else {
-                throw new Exception("There are no filled questions");
+                throw new QuestionReadException("There are no filled questions");
             }
 
         } catch (Exception e) {
