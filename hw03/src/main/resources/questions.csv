@@ -7,5 +7,5 @@ Which keyword is used to define a constant variable in Java?;const%false|static%
 What does SQL stand for?;Structured Query Language%true|Simple Question Line%false|Standard Query Limit%false|Structured Question Language%false
 Which of these is NOT a valid Python data structure?;list%false|tuple%false|array%true|dict%false
 What is the main purpose of Git?;To deploy applications to production%false|To track changes in source code during software development%true|To manage database schemas%false|To compile code into executable binaries%false
-What is a common symptom of "infinite loop"?;The program prints "Hello World" once%false|The program consumes 100% CPU and stops responding%true|The program throws a NullPointerException%false|The computer automatically turns off%false
+What is a common symptom of "infinite loop"?;The program prints "Hello World" once%false|The program consumes 100 percent CPU and stops responding%true|The program throws a NullPointerException%false|The computer automatically turns off%false
 According to internet lore, what is the answer to the Ultimate Question of Life, the Universe, and Everything?;42%true|Peace%false|Love%false|To be or not to be%false
