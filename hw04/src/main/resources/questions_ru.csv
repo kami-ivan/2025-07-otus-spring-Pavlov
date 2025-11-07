@@ -1,0 +1,11 @@
+# Добавить сюда своих вопросов. Эту строку надо пропустить при настройке CsvToBean (withSkipLines)
+Есть ли жизнь на Марсе?;Это науке пока не известно%true|Конечно. Красные (НЛО) это с Марса. А зеленые (НЛО) с Венеры%false|Точно нет%false
+Как нужно загружать ресурс из jar в Java?;ClassLoader#geResourceAsStream или ClassPathResource#getInputStream%true|ClassLoader#geResource#getFile + FileReader%false|Wingardium Leviosa%false
+Какой предпочтительный способ реакции на исключения?;@SneakyThrow%false|e.printStackTrace()%false|Проброс дальше с предварительным оборачиванием в бизнес-исключение (например, QuestionReadException)%true|Игнорирование исключения%false
+Какова столица Японии?;Сеул%false|Пекин%false|Киото%false|Токио%true
+Какое ключевое слово используется для определения константной переменной в Java?;const%false|static%false|final%true|constant%false
+Что означает аббревиатура SQL?;Structured Query Language%true|Simple Question Line%false|Standard Query Limit%false|Structured Question Language%false
+Что из перечисленного НЕ является встроенной структурой данных в Python?;list%false|tuple%false|array%true|dict%false
+Какова основная цель Git?;Деплой приложений в продакшен%false|Отслеживание изменений в исходном коде в процессе разработки%true|Управление схемами баз данных%false|Компиляция кода в исполняемые файлы%false
+Что является частым симптомом "бесконечного цикла"?;Программа выводит "Hello World" один раз%false|Программа использует 100 процентов ЦП и перестает отвечать%true|Программа выбрасывает NullPointerException%false|Компьютер самопроизвольно выключается%false
+Согласно интернет-фольклору, каков ответ на Главный Вопрос Жизни, Вселенной и Всего Такого?;42%true|Мир%false|Любовь%false|Быть или не быть%false
