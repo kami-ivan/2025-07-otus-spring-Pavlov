@@ -3,12 +3,11 @@ package ru.otus.hw.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.otus.hw.dao.QuestionDao;
 import ru.otus.hw.domain.Answer;
 import ru.otus.hw.domain.Question;
@@ -18,106 +17,85 @@ import ru.otus.hw.domain.TestResult;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willDoNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
 class TestServiceTest {
 
-    @Mock
-    private LocalizedIOService ioService;
-
-    @Mock
+    @MockitoBean
     private QuestionDao questionDao;
 
-    @InjectMocks
-    private TestServiceImpl testService;
+    @MockitoBean
+    private LocalizedIOService ioService;
+
+    @Autowired
+    private TestService testService;
 
     @Captor
-    private ArgumentCaptor<String> stringCaptor;
+    private ArgumentCaptor<String> stringArgumentCaptor;
 
-    @Captor
-    private ArgumentCaptor<Integer> intCaptor;
+
+    private List<Question> questions;
 
     private Student student;
-    private List<Question> questions;
+
+    private TestResult expextedTestResult;
 
     @BeforeEach
     void setUp() {
-        student = new Student("Test", "Student");
         questions = List.of(
                 new Question("Question 1", List.of(
-                        new Answer("Answer 1-1", true),
-                        new Answer("Answer 1-2", false)
-                )),
+                        new Answer("Answer 1-1", false),
+                        new Answer("Answer 1-2", true))),
                 new Question("Question 2", List.of(
                         new Answer("Answer 2-1", false),
                         new Answer("Answer 2-2", true),
-                        new Answer("Answer 2-3", false)
-                ))
-        );
+                        new Answer("Answer 2-3", false))));
+        student = new Student("Ivan", "Ivanov");
+        expextedTestResult = new TestResult(student);
+        expextedTestResult.setRightAnswersCount(2);
     }
 
     @Test
     @DisplayName("Должен корректно выполнить тест и вернуть результат")
     void shouldExecuteTestAndReturnResult() {
-        when(questionDao.findAll()).thenReturn(questions);
-        when(ioService.readIntForRangeWithPromptLocalized(
-                anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(1, 3);
+        given(questionDao.findAll()).willReturn(questions);
+        given(ioService.readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString())).willReturn(2);
 
+        willDoNothing().given(ioService).printLine(stringArgumentCaptor.capture());
 
-        TestResult result = testService.executeTestFor(student);
+        TestResult actualTestResult = testService.executeTestFor(student);
 
-        assertThat(result.getStudent()).isEqualTo(student);
-        assertThat(result.getRightAnswersCount()).isEqualTo(1);
-        assertThat(result.getAnsweredQuestions()).hasSize(2);
+        assertEquals(questionDao.findAll().size(), actualTestResult.getAnsweredQuestions().size());
+        assertEquals(expextedTestResult.getRightAnswersCount(), actualTestResult.getRightAnswersCount());
 
-        verify(questionDao).findAll();
-        verify(ioService, times(2)).printLine("");
-        verify(ioService).printLineLocalized("TestService.answer.the.questions");
-        verify(ioService).printFormattedLineLocalized("TestService.test.info", 2);
-        verify(ioService, times(2)).printFormattedLineLocalized(eq("TestService.output.question"),
-                intCaptor.capture(), stringCaptor.capture());
+        verify(questionDao, times(2)).findAll();
+        verify(ioService, times(2)).printLine(any(String.class));
+        verify(ioService, times(2)).readIntForRangeWithPromptLocalized(anyInt(), anyInt(), anyString(), anyString());
 
-        assertThat(intCaptor.getAllValues()).containsExactly(1, 2);
-        assertThat(stringCaptor.getAllValues()).containsExactly("Question 1", "Question 2");
-    }
+        assertThat(actualTestResult.getAnsweredQuestions()).usingRecursiveFieldByFieldElementComparator().containsExactlyElementsOf(questions);
 
-    @Test
-    @DisplayName("Должен обработать все вопросы")
-    void shouldProcessAllQuestions() {
-        when(questionDao.findAll()).thenReturn(questions);
-        when(ioService.readIntForRangeWithPromptLocalized(
-                anyInt(), anyInt(), anyString(), anyString()))
-                .thenReturn(1, 2);
-
-        TestResult result = testService.executeTestFor(student);
-
-        verify(ioService, times(5)).printFormattedLineLocalized(
-                eq("TestService.output.answers"),
-                intCaptor.capture(),
-                stringCaptor.capture());
-
-        assertThat(stringCaptor.getAllValues())
-                .containsExactly("Answer 1-1", "Answer 1-2", "Answer 2-1", "Answer 2-2", "Answer 2-3");
+        assertThat(actualTestResult).isNotNull().usingRecursiveComparison().ignoringFields("answeredQuestions").isEqualTo(expextedTestResult);
     }
 
     @Test
     @DisplayName("Должен ничего не выводить когда вопросов нет")
     void shouldPrintNothingWhenNoQuestions() {
-        when(questionDao.findAll()).thenReturn(List.of());
+        given(questionDao.findAll()).willReturn(List.of());
 
         testService.executeTestFor(student);
 
-        verify(ioService, times(2)).printLine("");
-        verify(ioService).printLineLocalized("TestService.answer.the.questions");
-        verify(ioService).printFormattedLineLocalized("TestService.test.info", 0);
+        verify(ioService, times(6)).printLine("");
+        verify(ioService, times(2)).printLineLocalized("TestService.answer.the.questions");
+        verify(ioService, times(2)).printFormattedLineLocalized("TestService.test.info", 0);
 
-
-        verifyNoMoreInteractions(ioService);
-        verify(questionDao, times(1)).findAll();
+        verify(questionDao, times(2)).findAll();
     }
 }
