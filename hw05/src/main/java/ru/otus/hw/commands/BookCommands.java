@@ -8,7 +8,6 @@ import ru.otus.hw.services.BookService;
 
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"SpellCheckingInspection", "unused"})
 @RequiredArgsConstructor
 @ShellComponent
 public class BookCommands {

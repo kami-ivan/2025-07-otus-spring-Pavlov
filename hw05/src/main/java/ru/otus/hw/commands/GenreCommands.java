@@ -22,4 +22,11 @@ public class GenreCommands {
                 .map(genreConverter::genreToString)
                 .collect(Collectors.joining("," + System.lineSeparator()));
     }
+
+    @ShellMethod(value = "Find genres by id", key = "gbid")
+    public String findGenresById(long id) {
+        return genreService.findById(id)
+                .map(genreConverter::genreToString)
+                .orElse("Genre with id %d not found".formatted(id));
+    }
 }
