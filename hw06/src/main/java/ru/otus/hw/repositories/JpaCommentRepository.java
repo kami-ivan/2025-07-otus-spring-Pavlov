@@ -4,6 +4,7 @@ package ru.otus.hw.repositories;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.otus.hw.models.Comment;
 
@@ -11,14 +12,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class JpaCommentRepository implements CommentRepository {
 
     @PersistenceContext
     private final EntityManager entityManager;
-
-    public JpaCommentRepository(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     @Override
     public Optional<Comment> findById(long id) {
@@ -48,8 +46,8 @@ public class JpaCommentRepository implements CommentRepository {
 
     @Override
     public void deleteById(long id) {
-        Comment targetComment = entityManager.find(Comment.class, id);
-        entityManager.remove(targetComment);
+        Comment reference = entityManager.getReference(Comment.class, id);
+        entityManager.remove(reference);
     }
 
 }
