@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Comment;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +58,7 @@ public class JpaBookRepository implements BookRepository {
 
     @Override
     public void deleteById(long id) {
-        Book targetBook = entityManager.find(Book.class, id);
-        entityManager.remove(targetBook);
+        Book reference = entityManager.getReference(Book.class, id);
+        entityManager.remove(reference);
     }
 }
