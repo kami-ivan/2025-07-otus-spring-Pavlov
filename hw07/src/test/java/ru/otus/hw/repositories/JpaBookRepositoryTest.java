@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -17,11 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами")
 @DataJpaTest
-@Import(JpaBookRepository.class)
 class JpaBookRepositoryTest {
 
     @Autowired
-    private JpaBookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @Autowired
     private TestEntityManager testEntityManager;
@@ -70,7 +68,7 @@ class JpaBookRepositoryTest {
     @Test
     void shouldDeleteBook() {
         assertThat(bookRepository.findById(1)).isPresent();
-        bookRepository.deleteById(1);
+        bookRepository.deleteById(1L);
         assertThat(bookRepository.findById(1)).isEmpty();
     }
 }

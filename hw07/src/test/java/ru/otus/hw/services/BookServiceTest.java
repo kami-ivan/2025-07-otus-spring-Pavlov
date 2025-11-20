@@ -7,15 +7,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.repositories.JpaAuthorRepository;
-import ru.otus.hw.repositories.JpaBookRepository;
-import ru.otus.hw.repositories.JpaGenreRepository;
+
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Сервис для работы с книгами")
 @DataJpaTest
-@Import({BookServiceImpl.class, JpaAuthorRepository.class, JpaGenreRepository.class, JpaBookRepository.class})
+@Import(BookServiceImpl.class)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class BookServiceTest {
 

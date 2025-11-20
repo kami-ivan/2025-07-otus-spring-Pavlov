@@ -9,8 +9,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.converters.CommentConverter;
 import ru.otus.hw.models.Comment;
-import ru.otus.hw.repositories.JpaBookRepository;
-import ru.otus.hw.repositories.JpaCommentRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Сервис для работы с комментариями")
 @DataJpaTest
-@Import({CommentServiceImpl.class, JpaBookRepository.class, JpaCommentRepository.class, CommentConverter.class})
+@Import({CommentServiceImpl.class, CommentConverter.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 public class CommentServiceTest {
 
