@@ -24,9 +24,9 @@ public class GenreCommands {
     }
 
     @ShellMethod(value = "Find genres by id", key = "gbid")
-    public String findGenresById(long id) {
+    public String findGenresById(String id) {
         return genreService.findById(id)
                 .map(genreConverter::genreToString)
-                .orElse("Genre with id %d not found".formatted(id));
+                .orElse("Genre (id= %s) not found".formatted(id));
     }
 }

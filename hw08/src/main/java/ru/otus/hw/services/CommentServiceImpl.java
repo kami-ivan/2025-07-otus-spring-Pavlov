@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
@@ -21,38 +22,38 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<Comment> findById(long id) {
+    public Optional<Comment> findById(String id) {
         return commentRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Comment> findAllByBookId(long id) {
+    public List<Comment> findAllByBookId(String id) {
         return commentRepository.findAllByBookId(id);
     }
 
     @Transactional
     @Override
-    public Comment insert(long bookId, String text) {
-        return save(0, bookId, text);
-    }
-
-    @Transactional
-    @Override
-    public Comment update(long id, long bookId, String text) {
+    public Comment insert(String id, String bookId, String text) {
         return save(id, bookId, text);
     }
 
     @Transactional
     @Override
-    public void deleteById(long id) {
+    public Comment update(String id, String bookId, String text) {
+        return save(id, bookId, text);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(String id) {
         commentRepository.deleteById(id);
     }
 
-    private Comment save(long id, long bookId, String text) {
-        var book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id = %d not found".formatted(bookId)));
-        var comment = new Comment(id, book, text);
+    private Comment save(String id, String bookId, String text) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book (id= %s) not found".formatted(bookId)));
+        Comment comment = new Comment(id, book, text);
         return commentRepository.save(comment);
     }
 }
