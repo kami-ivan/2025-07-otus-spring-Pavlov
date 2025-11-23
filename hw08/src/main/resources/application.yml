@@ -1,18 +1,19 @@
 spring:
-  main:
-    allow-bean-definition-overriding: true
   data:
     mongodb:
-      uri: mongodb://localhost:27018/booklibrary
-      auto-index-creation: true
-
-de:
-  flapdoodle:
-    mongodb:
-      embedded:
-        version: 4.4.13
+      host: localhost
+      port: 27017
+      database: user_db
+      username: user
+      password: password
+      authentication-database: admin
+  shell:
+    command:
+      version:
+        enabled: true
 
 mongock:
-  migration-scan-package:
+  #runner-type: "ApplicationRunner" # default
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
     - ru.otus.hw.mongock.changelog
-  enabled: true

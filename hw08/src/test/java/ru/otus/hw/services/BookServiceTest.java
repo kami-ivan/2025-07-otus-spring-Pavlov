@@ -33,10 +33,10 @@ class BookServiceTest {
     @DisplayName("Не должен выбрасывать исключение при запросе книги по id")
     @Test
     void shouldNotThrowExceptionForFindBookById() {
-        assertDoesNotThrow(() -> bookService.findById("1")
+        assertDoesNotThrow(() -> bookService.findById("2")
                 .get().getAuthor().getFullName());
 
-        assertDoesNotThrow(() -> bookService.findById("1")
+        assertDoesNotThrow(() -> bookService.findById("2")
                 .get().getGenre().getName());
     }
 

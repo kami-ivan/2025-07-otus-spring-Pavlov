@@ -32,9 +32,9 @@ public class CommentServiceTest {
     @DisplayName("должен загружать комментарий по id")
     @Test
     void shouldReturnCommentById() {
-        Query query = new Query(Criteria.where("_id").is("1"));
+        Query query = new Query(Criteria.where("_id").is("2"));
         Comment expectedComment = mongoTemplate.findOne(query, Comment.class, "comments");
-        Optional<Comment> actualComment = commentService.findById("1");
+        Optional<Comment> actualComment = commentService.findById("2");
 
         assertThat(actualComment).contains(expectedComment);
     }
