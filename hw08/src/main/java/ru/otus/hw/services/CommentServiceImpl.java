@@ -28,8 +28,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Comment> findAllByBookId(String id) {
-        return commentRepository.findAllByBookId(id);
+    public List<Comment> findAllByBookId(String bookId) {
+        return commentRepository.findAllByBookId(bookId);
     }
 
     @Transactional
