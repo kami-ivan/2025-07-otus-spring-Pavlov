@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CommentService {
     Optional<Comment> findById(long id);
 
-    List<Comment> findAllByBookId(long id);
+    List<Comment> findAllByBookId(long bookId);
 
     Comment insert(long bookId, String text);
 
