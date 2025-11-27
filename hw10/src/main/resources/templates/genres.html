@@ -20,7 +20,7 @@
             border-collapse: collapse;
             margin: 20px auto;
             background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .genres th {
@@ -67,13 +67,28 @@
         <th>Name</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="genre : ${genres}" th:object="${genre}">
-        <td th:text="*{id}">0</td>
-        <td th:text="*{name}">Default genre</td>
-    </tr>
-    </tbody>
+    <tbody id="genresTable"></tbody>
 </table>
+
+<script>
+    const tableBody = document.getElementById('genresTable');
+
+    fetch("/api/v1/genres")
+        .then(response => response.json())
+        .then(data => data.forEach(item => {
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const nameCell = document.createElement('td');
+            nameCell.textContent = item.name;
+            row.appendChild(nameCell);
+
+            tableBody.appendChild(row);
+        }));
+</script>
 
 <div class="row">
     <a href="books.html" th:href="@{/}">

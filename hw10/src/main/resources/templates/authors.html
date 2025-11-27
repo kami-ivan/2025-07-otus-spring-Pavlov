@@ -20,7 +20,7 @@
             border-collapse: collapse;
             margin: 20px auto;
             background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .authors th {
@@ -67,13 +67,28 @@
         <th>Name</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="author : ${authors}" th:object="${author}">
-        <td th:text="*{id}">0</td>
-        <td th:text="*{fullName}">Default author</td>
-    </tr>
-    </tbody>
+    <tbody id="authorsTable"></tbody>
 </table>
+
+<script>
+    const tableBody = document.getElementById('authorsTable');
+
+    fetch("/api/v1/authors")
+        .then(response => response.json())
+        .then(data => data.forEach(item => {
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const fullNameCell = document.createElement('td');
+            fullNameCell.textContent = item.fullName;
+            row.appendChild(fullNameCell);
+
+            tableBody.appendChild(row);
+        }));
+</script>
 
 <div class="row">
     <a href="books.html" th:href="@{/}">

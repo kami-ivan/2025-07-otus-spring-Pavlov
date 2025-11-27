@@ -18,7 +18,7 @@
             background: white;
             padding: 30px;
             border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             width: 400px;
         }
 
@@ -71,43 +71,78 @@
             margin-top: 0;
         }
     </style>
+
+    <script>
+        function saveBook() {
+            const idInput = document.getElementById("id-input")
+            const titleInput = document.getElementById("book-title-input")
+            const authorSelect = document.getElementById("book-author-select")
+            const genreSelect = document.getElementById("book-genre-select")
+            const book = {
+                id: idInput.value,
+                title: titleInput.value,
+                author: {
+                    id: authorSelect.value,
+                    fullName: authorSelect.text
+                },
+                genre: {
+                    id: genreSelect.value,
+                    name: genreSelect.text
+                }
+            }
+            fetch("/api/v1/book", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(book)
+            })
+                .then(data => {
+                    window.location.href = '/';
+                })
+        }
+    </script>
 </head>
 
 <body>
-<form id="add-book-form" action="add_book.html"
-      th:action="@{/edit/book(id=${book.id})}"
-      th:object="${book}"
-      th:method="post">
-    <h3>Add new book:</h3>
+
+<form id="add-book-form" th:object="${book}">
+    <h3>New Book:</h3>
 
     <div class="row">
-        <input id="id-input" name="id" type="text" readonly="readonly" value="id" th:field="*{id}"/>
+        <input id="id-input" name="id" type="text" readonly="readonly" value="0" th:field="*{id}"/>
     </div>
 
     <div class="row">
         <input id="book-title-input" name="title" type="text" value="Default Title" th:field="*{title}"/>
-        <div class="errors" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error: incorrect book title</div>
     </div>
 
     <div class="row">
-        <select class="form-control" id="book-author-select" th:field="*{author}">
-            <option value="0">Select author</option>
-            <option th:each="author : ${authors}" th:value="${author.id}" th:text="${author.fullName}"></option>
+        <select class="form-control" id="book-author-select" th:field="*{author.id}">
+            <option value="" disabled selected>Select author</option>
+            <option th:each="author : ${authors}"
+                    th:value="${author.id}"
+                    th:text="${author.fullName}">
+            </option>
         </select>
-        <div class="errors" th:if="${#fields.hasErrors('author')}" th:errors="*{author}">Error: incorrect book author</div>
     </div>
 
     <div class="row">
-        <select class="form-control" id="book-genre-select" th:field="*{genre}">
-            <option value="0">Select genre</option>
-            <option th:each="genre : ${genres}" th:value="${genre.id}" th:text="${genre.name}"></option>
+        <select class="form-control" id="book-genre-select" th:field="*{genre.id}">
+            <option value="" disabled selected>Select genre</option>
+            <option th:each="genre : ${genres}"
+                    th:value="${genre.id}"
+                    th:text="${genre.name}">
+            </option>
         </select>
-        <div class="errors" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}">Error: incorrect book genre</div>
     </div>
 
     <div class="row">
-        <button type="submit">Save</button>
-        <a href="books.html" th:href="@{/}"><button type="button">Cancel</button></a>
+        <button type="button" onclick="saveBook()">Save</button>
+        <a href="books.html" th:href="@{/}">
+            <button type="button">Cancel</button>
+        </a>
     </div>
 </form>
 

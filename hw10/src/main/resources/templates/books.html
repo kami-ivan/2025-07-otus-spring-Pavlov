@@ -21,7 +21,7 @@
             border-collapse: collapse;
             margin: 20px auto;
             background: white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .books th {
@@ -123,23 +123,76 @@
         <th>Delete</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="book : ${books}" th:object="${book}">
-        <td th:text="*{id}">0</td>
-        <td th:text="*{title}">Default title</td>
-        <td th:text="*{author.fullName}">Default author</td>
-        <td th:text="*{genre.name}">Default genre</td>
-        <td><a href="comments.html" th:href="@{/comments(book_id=*{id})}">Comments</a></td>
-        <td><a href="edit_book.html" th:href="@{/edit/book(id=*{id})}">Edit</a></td>
-        <td>
-            <form th:action="@{/delete/book(id=*{id})}" method="post">
-                <input type="hidden" name="_method" value="delete"/>
-                <button type="submit">Delete</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
+    <tbody id="booksTable"></tbody>
 </table>
+
+<script th:inline="javascript">
+    const url = `/api/v1/book`;
+
+    const tableBody = document.getElementById('booksTable');
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => data.forEach(item => {
+            const bookId = item.id;
+
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const titleCell = document.createElement('td');
+            titleCell.textContent = item.title;
+            row.appendChild(titleCell);
+
+            const authorFullNameCell = document.createElement('td');
+            authorFullNameCell.textContent = item.author.fullName;
+            row.appendChild(authorFullNameCell);
+
+            const genreNameCell = document.createElement('td');
+            genreNameCell.textContent = item.genre.name;
+            row.appendChild(genreNameCell);
+
+            const commentsCell = document.createElement('td');
+            const commentsLink = document.createElement('a');
+            commentsLink.href = `/comments?book_id=${bookId}`;
+            commentsLink.textContent = 'Comments';
+            commentsCell.appendChild(commentsLink);
+            row.appendChild(commentsCell);
+
+            const editBookCell = document.createElement('td');
+            const editBookLink = document.createElement('a');
+            editBookLink.href = `/edit/book?id=${bookId}`;
+            editBookLink.textContent = 'Edit';
+            editBookCell.appendChild(editBookLink);
+            row.appendChild(editBookCell);
+
+            const deleteBookCell = document.createElement('td');
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "submit-btn";
+
+            const deleteApiUrl = `/api/v1/book/${bookId}`;
+            deleteButton.addEventListener('click', async () => {
+                const response = await fetch(deleteApiUrl, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    console.error('Delete failed:', response.status);
+                    alert('Error deleting book');
+                }
+            });
+
+            deleteBookCell.appendChild(deleteButton);
+            row.appendChild(deleteBookCell);
+
+            tableBody.appendChild(row);
+        }));
+</script>
 
 <div>
     <form th:action="@{/add/book}" method="get">

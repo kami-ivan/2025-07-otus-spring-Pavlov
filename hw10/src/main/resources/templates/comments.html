@@ -68,14 +68,37 @@
         <th>Book Title</th>
     </tr>
     </thead>
-    <tbody>
-    <tr th:each="comment : ${comments}" th:object="${comment}">
-        <td th:text="*{id}">0</td>
-        <td th:text="*{text}">Default Text</td>
-        <td th:text="*{book.title}">Default Book Title</td>
-    </tr>
-    </tbody>
+    <tbody id="commentsTable"></tbody>
 </table>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const bookId = /*[[${bookId}]]*/ 0;
+    const url = `/api/v1/book/${bookId}/comment`;
+    /*]]>*/
+
+    const tableBody = document.getElementById('commentsTable');
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => data.forEach(item => {
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const textCell = document.createElement('td');
+            textCell.textContent = item.text;
+            row.appendChild(textCell);
+
+            const bookTitleCell = document.createElement('td');
+            bookTitleCell.textContent = item.book.title;
+            row.appendChild(bookTitleCell);
+
+            tableBody.appendChild(row);
+        }));
+</script>
 
 <div class="row">
     <a href="books.html" th:href="@{/}">

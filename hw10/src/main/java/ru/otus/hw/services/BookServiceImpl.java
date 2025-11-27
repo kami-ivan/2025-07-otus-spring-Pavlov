@@ -3,7 +3,7 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.dto.BookDto;
+import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
 
