@@ -2,13 +2,12 @@ package ru.otus.hw.services;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
-
-import java.util.List;
-import java.util.Optional;
+import ru.otus.hw.rest.dto.BookFlatDto;
 
 @RequiredArgsConstructor
 @Service
@@ -16,27 +15,29 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
 
-    @Transactional(readOnly = true)
+    private final BookDataLoader bookDataLoader;
+
     @Override
-    public Optional<BookDto> findById(long id) {
-        return bookRepository.findById(id).map(BookDto::fromDomainObject);
+    public Mono<BookDto> findById(long id) {
+        return bookRepository.findById(id).flatMap(bookDataLoader::loadRelations)
+                .map(BookDto::fromDomainObject);
     }
 
-    @Transactional(readOnly = true)
     @Override
-    public List<BookDto> findAll() {
-        return bookRepository.findAll().stream().map(BookDto::fromDomainObject).toList();
+    public Flux<BookDto> findAll() {
+        return bookRepository.findAll().transform(bookDataLoader::loadRelations)
+                .map(BookDto::fromDomainObject);
     }
 
-    @Transactional
     @Override
-    public Book save(Book book) {
-        return bookRepository.save(book);
+    public Mono<BookFlatDto> save(Book book) {
+        return bookRepository.save(book).map(Book::toBookFlat)
+                .map(BookFlatDto::fromDomainObject);
+
     }
 
-    @Transactional
     @Override
-    public void deleteById(long id) {
-        bookRepository.deleteById(id);
+    public Mono<Void> deleteById(long id) {
+        return bookRepository.deleteById(id);
     }
 }

@@ -12,18 +12,18 @@ public class CommentDto {
     private long id;
 
     @NotNull(message = "book must be selected")
-    private BookDto book;
+    private long bookId;
 
     @NotBlank(message = "text should not be blank")
     private String text;
 
     public Comment toDomainObject() {
-        return new Comment(id, book.toDomainObject(), text);
+        return new Comment(id, bookId, text);
     }
 
     public static CommentDto fromDomainObject(Comment comment) {
         return new CommentDto(comment.getId(),
-                BookDto.fromDomainObject(comment.getBook()),
+                comment.getBookId(),
                 comment.getText());
     }
 }

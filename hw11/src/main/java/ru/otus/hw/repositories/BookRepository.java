@@ -1,16 +1,14 @@
 package ru.otus.hw.repositories;
 
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
+import lombok.NonNull;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.hw.models.Book;
 
-import java.util.List;
-import java.util.Optional;
+public interface BookRepository extends R2dbcRepository<Book, Long> {
+    Mono<Book> findById(long id);
 
-public interface BookRepository extends JpaRepository<Book, Long> {
-    @EntityGraph(value = "book-author-genre-graph")
-    Optional<Book> findById(long id);
-
-    @EntityGraph(value = "book-author-genre-graph")
-    List<Book> findAll();
+    @NonNull
+    Flux<Book> findAll();
 }
