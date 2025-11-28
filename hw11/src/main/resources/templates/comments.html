@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Comments to the book</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .comments {
+            width: 60%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .comments th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+        }
+
+        .comments td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comments tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background: #34495e;
+        }
+
+        h3 {
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+<h3>Comments:</h3>
+<table class="comments">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Text</th>
+        <th>Book Title</th>
+    </tr>
+    </thead>
+    <tbody id="commentsTable"></tbody>
+</table>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const bookId = /*[[${bookId}]]*/ 0;
+    const url = `/api/v1/book/${bookId}/comment`;
+    /*]]>*/
+
+    const tableBody = document.getElementById('commentsTable');
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => data.forEach(item => {
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const textCell = document.createElement('td');
+            textCell.textContent = item.text;
+            row.appendChild(textCell);
+
+            const bookTitleCell = document.createElement('td');
+            bookTitleCell.textContent = item.book.title;
+            row.appendChild(bookTitleCell);
+
+            tableBody.appendChild(row);
+        }));
+</script>
+
+<div class="row">
+    <a href="books.html" th:href="@{/}">
+        <button type="button">Back</button>
+    </a>
+</div>
+</body>
+</html>
