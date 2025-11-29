@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.rest.dto.AuthorDto;
@@ -42,6 +43,7 @@ public class AuthorControllerTest {
 
     @DisplayName("должен вернуть корректный список авторов")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnCorrectAuthorsList() throws Exception {
         when(authorService.findAll()).thenReturn(authorDtos);
 
@@ -52,11 +54,13 @@ public class AuthorControllerTest {
 
     @DisplayName("должен вернуть ожидаемую ошибку когда авторы не найдены")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnExpectedErrorWhenAuthorsNotFound() throws Exception {
         when(authorService.findAll()).thenReturn(List.of());
 
         mvc.perform(get("/api/v1/authors"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().json(mapper.writeValueAsString(new ErrorDto("error", "Authors not found"))));
+                .andExpect(content().json(mapper.writeValueAsString(
+                        new ErrorDto("error", "Authors not found"))));
     }
 }

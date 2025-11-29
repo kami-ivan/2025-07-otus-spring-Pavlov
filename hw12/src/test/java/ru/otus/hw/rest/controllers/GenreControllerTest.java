@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.rest.dto.GenreDto;
@@ -42,6 +43,7 @@ public class GenreControllerTest {
 
     @DisplayName("должен вернуть корректный список жанров")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnCorrectGenresList() throws Exception {
         when(genreService.findAll()).thenReturn(genreDtos);
 
@@ -52,6 +54,7 @@ public class GenreControllerTest {
 
     @DisplayName("должен вернуть ожидаемую ошибку когда жанры не найдены")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnExpectedErrorWhenGenresNotFound() throws Exception {
         when(genreService.findAll()).thenReturn(List.of());
 

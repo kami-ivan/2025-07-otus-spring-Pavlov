@@ -12,3 +12,13 @@ insert into books(title, author_id, genre_id)
 values ('BookTitle_1', 1, 1),
        ('BookTitle_2', 2, 2),
        ('BookTitle_3', 3, 3);
+
+insert into comments(book_id, text)
+values (1,'Comment_1'),
+       (2, 'Comment_2'),
+       (3, 'Comment_3'),
+       (1, 'Comment_4');
+
+insert into users(username, password)
+values ('user', '$2a$10$RQ2BRK5oIsobxSUa/PVMyOqiK2kcFczj8vE/2VilcBaled2fclIq.'),
+       ('admin', '$2a$10$EXvc3B0tSzxmFTJF98FbFut9SZchbWdJDxORXh7MGPfLwrFGPjTvq')

@@ -1,4 +1,4 @@
-package ru.otus.hw.page;
+package ru.otus.hw.pages;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

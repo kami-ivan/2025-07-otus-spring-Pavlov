@@ -1,4 +1,4 @@
-package ru.otus.hw.page;
+package ru.otus.hw.pages;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @RequiredArgsConstructor
-public class GenrePagesController {
+public class AuthorPagesController {
 
-    @GetMapping("/genres")
-    public String listGenresPage() {
-        return "genres";
+    @GetMapping("/authors")
+    public String listAuthorsPage() {
+        return "authors";
     }
 }

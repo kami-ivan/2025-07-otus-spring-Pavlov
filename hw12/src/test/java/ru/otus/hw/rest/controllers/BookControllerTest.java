@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.rest.dto.AuthorDto;
@@ -21,6 +22,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,6 +55,7 @@ public class BookControllerTest {
 
     @DisplayName("должен вернуть корректный список книг")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnCorrectABooksList() throws Exception {
         when(bookService.findAll()).thenReturn(bookDtos);
 
@@ -62,6 +65,7 @@ public class BookControllerTest {
 
     @DisplayName("должен вернуть корректную книгу")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnCorrectBook() throws Exception {
         when(bookService.findById(1L)).thenReturn(Optional.ofNullable(bookDtos.get(0)));
 
@@ -73,6 +77,7 @@ public class BookControllerTest {
 
     @DisplayName("должен вернуть ожидаемую ошибку когда книга не найдена")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldReturnExpectedErrorWhenBookNotFound() throws Exception {
         when(bookService.findById(1L)).thenReturn(Optional.empty());
 
@@ -84,6 +89,7 @@ public class BookControllerTest {
 
     @DisplayName("должен корректно сохранить книгу")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldCorrectSaveBook() throws Exception {
         Book book = new Book(1L, "Test_NewBook_1",
                 authorDto.toDomainObject(),
@@ -92,15 +98,17 @@ public class BookControllerTest {
 
         String expectedBook = mapper.writeValueAsString(BookDto.fromDomainObject(book));
 
-        mvc.perform(post("/api/v1/book").contentType(APPLICATION_JSON).content(expectedBook))
+        mvc.perform(post("/api/v1/book").contentType(APPLICATION_JSON)
+                .content(expectedBook).with(csrf()))
                 .andExpect(status().isOk()).andExpect(content().json(expectedBook));
     }
 
     @DisplayName("должен корректно удалить книгу")
     @Test
+    @WithMockUser(username = "testuser", roles = {"USER"})
     void shouldCorrectDeleteBook() throws Exception {
         String url = "/api/v1/book/" + 1L;
-        mvc.perform(delete(url)).andExpect(status().isOk());
+        mvc.perform(delete(url).with(csrf())).andExpect(status().isOk());
     }
 
 }
