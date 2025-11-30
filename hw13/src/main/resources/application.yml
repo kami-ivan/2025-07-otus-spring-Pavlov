@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:maindb
+    url: jdbc:h2:mem:maindb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
   sql:
     init:
       mode: always
@@ -15,6 +15,9 @@ spring:
     generate-ddl: false
     hibernate:
       ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
   mvc:
     hiddenmethod:
       filter:

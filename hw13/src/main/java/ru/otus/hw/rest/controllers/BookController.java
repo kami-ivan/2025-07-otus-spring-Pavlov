@@ -24,7 +24,11 @@ public class BookController {
 
     @GetMapping("/api/v1/book")
     public List<BookDto> getAllBooks() {
-        return bookService.findAll();
+        List<BookDto> books = bookService.findAll();
+        if (books.isEmpty()) {
+            throw new EntityNotFoundException("Books not found");
+        }
+        return books;
     }
 
     @GetMapping("/api/v1/book/{id}")

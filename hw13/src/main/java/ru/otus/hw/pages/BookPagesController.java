@@ -1,6 +1,7 @@
 package ru.otus.hw.pages;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,7 @@ public class BookPagesController {
     }
 
     @GetMapping("/edit/book")
+    @PreAuthorize("hasRole('ADMIN')")
     public String editBookPage(@RequestParam("id") long id, Model model) {
         model.addAttribute("bookId", id);
         addToModelAG(model);
@@ -35,6 +37,7 @@ public class BookPagesController {
     }
 
     @GetMapping("/add/book")
+    @PreAuthorize("hasRole('ADMIN')")
     public String addBookPage(Model model) {
         BookDto bookDto = new BookDto();
         model.addAttribute("book", bookDto);

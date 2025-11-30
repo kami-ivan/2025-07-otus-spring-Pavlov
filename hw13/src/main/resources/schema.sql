@@ -25,9 +25,16 @@ create table if not exists comments (
     primary key (id)
 );
 
+create table if not exists roles (
+    id bigserial,
+    name varchar(42),
+    primary key (id)
+    );
+
 create table if not exists users (
     id bigserial,
     username varchar(42),
     password varchar(255),
+    role_id bigint references roles (id) on delete cascade,
     primary key (id)
 );

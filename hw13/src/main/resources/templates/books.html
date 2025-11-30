@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
     <title>List of all books</title>
@@ -102,6 +102,9 @@
     </style>
 </head>
 <body>
+
+<div th:insert="~{fragments/logout_button :: logout-button}"></div>
+
 <h3>Pages:</h3>
 <table class="pages">
     <tr>
@@ -119,8 +122,8 @@
         <th>Author</th>
         <th>Genre</th>
         <th>Comments</th>
-        <th>Edit</th>
-        <th>Delete</th>
+        <th sec:authorize="hasRole('ADMIN')">Edit</th>
+        <th sec:authorize="hasRole('ADMIN')">Delete</th>
     </tr>
     </thead>
     <tbody id="booksTable"></tbody>
@@ -130,6 +133,7 @@
     const url = `/api/v1/book`;
 
     const tableBody = document.getElementById('booksTable');
+    const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
 
     fetch(url)
         .then(response => response.json())
@@ -161,40 +165,43 @@
             commentsCell.appendChild(commentsLink);
             row.appendChild(commentsCell);
 
-            const editBookCell = document.createElement('td');
-            const editBookLink = document.createElement('a');
-            editBookLink.href = `/edit/book?id=${bookId}`;
-            editBookLink.textContent = 'Edit';
-            editBookCell.appendChild(editBookLink);
-            row.appendChild(editBookCell);
+            if (isAdmin) {
+                const editBookCell = document.createElement('td');
+                const editBookLink = document.createElement('a');
+                editBookLink.href = `/edit/book?id=${bookId}`;
+                editBookLink.textContent = 'Edit';
+                editBookCell.appendChild(editBookLink);
+                row.appendChild(editBookCell);
+            }
 
-            const deleteBookCell = document.createElement('td');
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = "Delete";
-            deleteButton.className = "submit-btn";
+            if (isAdmin) {
+                const deleteBookCell = document.createElement('td');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = "Delete";
+                deleteButton.className = "submit-btn";
 
-            const deleteApiUrl = `/api/v1/book/${bookId}`;
-            deleteButton.addEventListener('click', async () => {
-                const response = await fetch(deleteApiUrl, {
-                    method: 'DELETE'
+                const deleteApiUrl = `/api/v1/book/${bookId}`;
+                deleteButton.addEventListener('click', async () => {
+                    const response = await fetch(deleteApiUrl, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        console.error('Delete failed:', response.status);
+                        alert('Error deleting book');
+                    }
                 });
 
-                if (response.ok) {
-                    window.location.href = '/';
-                } else {
-                    console.error('Delete failed:', response.status);
-                    alert('Error deleting book');
-                }
-            });
-
-            deleteBookCell.appendChild(deleteButton);
-            row.appendChild(deleteBookCell);
-
+                deleteBookCell.appendChild(deleteButton);
+                row.appendChild(deleteBookCell);
+            }
             tableBody.appendChild(row);
         }));
 </script>
 
-<div>
+<div sec:authorize="hasRole('ADMIN')">
     <form th:action="@{/add/book}" method="get">
         <button type="submit">Add book</button>
     </form>
