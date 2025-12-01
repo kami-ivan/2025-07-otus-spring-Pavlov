@@ -75,7 +75,7 @@
 
 <body>
 <form id="add-book-form" action="add_book.html"
-      th:action="@{/edit/book(id=${book.id})}"
+      th:action="@{/add/book}"
       th:object="${book}"
       th:method="post">
     <h3>Add new book:</h3>

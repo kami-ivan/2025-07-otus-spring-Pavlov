@@ -10,8 +10,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.dto.mappers.BookMapper;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Author;
+import ru.otus.hw.models.Genre;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
@@ -40,6 +42,9 @@ public class BookControllerTest {
     @MockitoBean
     private GenreService genreService;
 
+    @MockitoBean
+    private BookMapper bookMapper;
+
     private static AuthorDto authorDto;
     private static GenreDto genreDto;
     private static List<BookDto> bookDtos;
@@ -48,9 +53,12 @@ public class BookControllerTest {
     static void setUpAll() {
         authorDto = new AuthorDto(1, "Test_Author_1");
         genreDto = new GenreDto(1, "Test_Genre_1");
+
+        Author author = new Author(1, "Test_Author_1");
+        Genre genre = new Genre(1, "Test_Genre_1");
         bookDtos = List.of(
-                new BookDto(1, "Test_Book_1", authorDto.toDomainObject(), genreDto.toDomainObject()),
-                new BookDto(2, "Test_Book_2", authorDto.toDomainObject(), genreDto.toDomainObject())
+                new BookDto(1, "Test_Book_1", author, genre),
+                new BookDto(2, "Test_Book_2", author, genre)
         );
     }
 
@@ -89,7 +97,7 @@ public class BookControllerTest {
         when(authorService.findAll()).thenReturn(List.of(authorDto));
         when(genreService.findAll()).thenReturn(List.of(genreDto));
 
-        BookDto expectedBookDto = BookDto.fromDomainObject(new Book(0, null, null, null));
+        BookDto expectedBookDto = new BookDto(0, null, null, null);
         List<AuthorDto> expectedAuthorDtos = List.of(authorDto);
         List<GenreDto> expectedGenreDtos = List.of(genreDto);
 

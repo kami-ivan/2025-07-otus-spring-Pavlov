@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.otus.hw.dto.AuthorDto;
 import ru.otus.hw.dto.BookDto;
 import ru.otus.hw.dto.GenreDto;
+import ru.otus.hw.dto.mappers.BookMapper;
 import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.services.AuthorService;
 import ru.otus.hw.services.BookService;
@@ -30,6 +31,8 @@ public class BookController {
 
     private final GenreService genreService;
 
+    private final BookMapper bookMapper;
+
     @GetMapping("/")
     public String listPage(Model model) {
         List<BookDto> bookDtos = bookService.findAll();
@@ -41,7 +44,7 @@ public class BookController {
     public String editPage(@RequestParam("id") long id, Model model) {
         BookDto bookDto = bookService.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Book (id= %d) not found".formatted(id)));
-        addToModelBAG(model, bookDto);
+        fillModel(model, bookDto);
 
         return "edit_book";
     }
@@ -51,19 +54,30 @@ public class BookController {
                            BindingResult bindingResult,
                            Model model) {
         if (bindingResult.hasErrors()) {
-            addToModelBAG(model, bookDto);
-
+            fillModel(model, bookDto);
             return "edit_book";
         }
-        bookService.save(bookDto.toDomainObject());
+        bookService.save(bookMapper.toEntity(bookDto));
         return "redirect:/";
     }
 
     @GetMapping("/add/book")
     public String addPage(Model model) {
         BookDto newBookDto = new BookDto();
-        addToModelBAG(model, newBookDto);
+        fillModel(model, newBookDto);
         return "add_book";
+    }
+
+    @PostMapping("/add/book")
+    public String addBook(@Valid @ModelAttribute("book") BookDto bookDto,
+                          BindingResult bindingResult,
+                          Model model) {
+        if (bindingResult.hasErrors()) {
+            fillModel(model, bookDto);
+            return "add_book";
+        }
+        bookService.save(bookMapper.toEntity(bookDto));
+        return "redirect:/";
     }
 
     @DeleteMapping("/delete/book")
@@ -72,7 +86,7 @@ public class BookController {
         return "redirect:/";
     }
 
-    private void addToModelBAG(Model model, BookDto bookDto) {
+    private void fillModel(Model model, BookDto bookDto) {
         model.addAttribute("book", bookDto);
 
         List<AuthorDto> authorDtos = authorService.findAll();
