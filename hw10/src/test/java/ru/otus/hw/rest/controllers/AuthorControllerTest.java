@@ -57,6 +57,7 @@ public class AuthorControllerTest {
 
         mvc.perform(get("/api/v1/authors"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().json(mapper.writeValueAsString(new ErrorDto("error", "Authors not found"))));
+                .andExpect(content().json(mapper.writeValueAsString(
+                        new ErrorDto("error", "Authors not found"))));
     }
 }

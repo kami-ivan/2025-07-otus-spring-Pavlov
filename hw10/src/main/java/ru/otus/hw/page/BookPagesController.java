@@ -29,7 +29,7 @@ public class BookPagesController {
     @GetMapping("/edit/book")
     public String editBookPage(@RequestParam("id") long id, Model model) {
         model.addAttribute("bookId", id);
-        addToModelAG(model);
+        fillModel(model);
 
         return "edit_book";
     }
@@ -38,12 +38,12 @@ public class BookPagesController {
     public String addBookPage(Model model) {
         BookDto bookDto = new BookDto();
         model.addAttribute("book", bookDto);
-        addToModelAG(model);
+        fillModel(model);
 
         return "add_book";
     }
 
-    private void addToModelAG(Model model) {
+    private void fillModel(Model model) {
         List<AuthorDto> authorDtos = authorService.findAll();
         List<GenreDto> genreDtos = genreService.findAll();
 

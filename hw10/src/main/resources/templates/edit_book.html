@@ -106,8 +106,8 @@
                     name: genreSelect.text
                 }
             }
-            fetch("/api/v1/book", {
-                method: 'POST',
+            fetch(`/api/v1/book/${bookId}`, {
+                method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'

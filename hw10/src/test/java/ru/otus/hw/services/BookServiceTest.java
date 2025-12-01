@@ -7,13 +7,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.rest.dto.mappers.AuthorMapper;
+import ru.otus.hw.rest.dto.mappers.BookMapper;
+import ru.otus.hw.rest.dto.mappers.GenreMapper;
 
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayName("Сервис для работы с книгами")
 @DataJpaTest
-@Import(BookServiceImpl.class)
+@Import({BookServiceImpl.class, BookMapper.class, AuthorMapper.class, GenreMapper.class})
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 class BookServiceTest {
 
