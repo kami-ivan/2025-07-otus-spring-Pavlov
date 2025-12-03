@@ -1,0 +1,62 @@
+package ru.otus.hw.rest.controllers;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import ru.otus.hw.models.Book;
+import ru.otus.hw.rest.dto.BookDto;
+import ru.otus.hw.rest.dto.mappers.BookMapper;
+import ru.otus.hw.rest.exceptions.EntityNotFoundException;
+import ru.otus.hw.services.BookService;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/book")
+@RequiredArgsConstructor
+public class BookController {
+
+    private final BookService bookService;
+
+    private final BookMapper bookMapper;
+
+    @GetMapping
+    public List<BookDto> getAllBooks() {
+        return bookService.findAll();
+    }
+
+    @GetMapping("/{id}")
+    public BookDto getBook(@PathVariable("id") long id) {
+        return bookService.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Book not found"));
+    }
+
+    @PostMapping
+    public ResponseEntity<BookDto> addBook(@Valid
+                                           @RequestBody
+                                           BookDto bookDto) {
+        Book book = bookService.save(bookMapper.toEntity(bookDto));
+        return ResponseEntity.ok(bookMapper.toDto(book));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<BookDto> editBook(@PathVariable("id") long id,
+                                            @Valid @RequestBody BookDto bookDto) {
+        bookDto.setId(id);
+        Book book = bookService.save(bookMapper.toEntity(bookDto));
+        return ResponseEntity.ok(bookMapper.toDto(book));
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable("id") long id) {
+        bookService.deleteById(id);
+    }
+}
