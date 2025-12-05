@@ -17,18 +17,21 @@ public class BookDataLoader {
     private final GenreRepository genreRepository;
 
     public Mono<Book> loadRelations(Book book) {
-        return Mono.zip(
-                authorRepository.findById(book.getAuthorId()),
-                genreRepository.findById(book.getGenreId())).map(
-                        tuple -> {
-                            book.setAuthor(tuple.getT1());
-                            book.setGenre(tuple.getT2());
-                            return book;
-                        });
+        return loadBookRelations(book);
     }
 
     public Flux<Book> loadRelations(Flux<Book> booksFlux) {
         return booksFlux.flatMap(this::loadRelations);
     }
 
+    private Mono<Book> loadBookRelations(Book book) {
+        return Mono.zip(
+                authorRepository.findById(book.getAuthorId()),
+                genreRepository.findById(book.getGenreId())).map(
+                tuple -> {
+                    book.setAuthor(tuple.getT1());
+                    book.setGenre(tuple.getT2());
+                    return book;
+                });
+    }
 }

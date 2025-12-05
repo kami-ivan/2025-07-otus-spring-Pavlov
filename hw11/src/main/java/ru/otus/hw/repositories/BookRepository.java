@@ -9,6 +9,5 @@ import ru.otus.hw.models.Book;
 public interface BookRepository extends R2dbcRepository<Book, Long> {
     Mono<Book> findById(long id);
 
-    @NonNull
     Flux<Book> findAll();
 }

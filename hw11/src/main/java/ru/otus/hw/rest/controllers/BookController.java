@@ -32,12 +32,10 @@ public class BookController {
     }
 
     @PostMapping("/api/v1/book")
-    public Mono<ResponseEntity<BookFlatDto>> addBook(@Valid
+    public Mono<BookFlatDto> addBook(@Valid
                                            @RequestBody
                                            BookDto bookDto) {
-        Mono<BookFlatDto> bookFlatDtoMono = bookService.save(bookDto.toDomainObject());
-        return bookFlatDtoMono.map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+        return bookService.save(bookDto.toDomainObject());
     }
 
     @DeleteMapping("/api/v1/book/{id}")

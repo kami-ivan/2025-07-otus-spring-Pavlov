@@ -8,6 +8,7 @@ import ru.otus.hw.rest.dto.BookDto;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.rest.dto.BookFlatDto;
+import ru.otus.hw.rest.exceptions.EntityNotFoundException;
 
 @RequiredArgsConstructor
 @Service
@@ -25,7 +26,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Flux<BookDto> findAll() {
-        return bookRepository.findAll().transform(bookDataLoader::loadRelations)
+        return bookRepository.findAll().switchIfEmpty(Flux.error(new EntityNotFoundException("Books not found")))
+                .transform(bookDataLoader::loadRelations)
                 .map(BookDto::fromDomainObject);
     }
 
