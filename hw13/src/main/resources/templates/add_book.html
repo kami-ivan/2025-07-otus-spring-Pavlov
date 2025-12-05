@@ -2,6 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <title>Add book</title>
     <style type="text/css">
         body {
@@ -74,6 +78,9 @@
 
     <script>
         function saveBook() {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
             const idInput = document.getElementById("id-input")
             const titleInput = document.getElementById("book-title-input")
             const authorSelect = document.getElementById("book-author-select")
@@ -94,13 +101,22 @@
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
                 },
                 body: JSON.stringify(book)
             })
-                .then(data => {
-                    window.location.href = '/';
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Error save book');
+                    }
                 })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error network');
+                });
         }
     </script>
 </head>

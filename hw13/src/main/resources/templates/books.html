@@ -2,6 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <title>List of all books</title>
     <style type="text/css">
         body {
@@ -132,6 +135,9 @@
 <script th:inline="javascript">
     const url = `/api/v1/book`;
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
     const tableBody = document.getElementById('booksTable');
     const isAdmin = /*[[${#authorization.expression('hasRole(''ADMIN'')')}]]*/ false;
 
@@ -183,7 +189,10 @@
                 const deleteApiUrl = `/api/v1/book/${bookId}`;
                 deleteButton.addEventListener('click', async () => {
                     const response = await fetch(deleteApiUrl, {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: {
+                            [csrfHeader]: csrfToken
+                        }
                     });
 
                     if (response.ok) {
