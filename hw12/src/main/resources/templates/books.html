@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .books {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .books th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .books td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .books tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .books td:first-child {
+            width: 40px;
+            color: #6c757d;
+        }
+
+        .books td:nth-child(2) {
+            width: 35%;
+            font-weight: 500;
+        }
+
+        .books td:nth-child(3),
+        .books td:nth-child(4) {
+            width: 20%;
+            color: #495057;
+        }
+
+        .pages {
+            margin: 20px 0;
+        }
+
+        .pages a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .pages a:hover {
+            color: #3498db;
+        }
+
+        button, .books a, .books button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .books button {
+            background: #e74c3c;
+        }
+
+        .books button:hover {
+            background: #c0392b;
+        }
+
+        button:hover, .books a:hover {
+            background: #34495e;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+<h3>Pages:</h3>
+<table class="pages">
+    <tr>
+        <td><a href="/authors">Authors</a></td>
+        <td><a href="/genres">Genres</a></td>
+    </tr>
+</table>
+
+<h3>Books:</h3>
+<table class="books">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Comments</th>
+        <th>Edit</th>
+        <th>Delete</th>
+    </tr>
+    </thead>
+    <tbody id="booksTable"></tbody>
+</table>
+
+<script th:inline="javascript">
+    const url = `/api/v1/book`;
+
+    const tableBody = document.getElementById('booksTable');
+
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => data.forEach(item => {
+            const bookId = item.id;
+
+            const row = document.createElement('tr');
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const titleCell = document.createElement('td');
+            titleCell.textContent = item.title;
+            row.appendChild(titleCell);
+
+            const authorFullNameCell = document.createElement('td');
+            authorFullNameCell.textContent = item.author.fullName;
+            row.appendChild(authorFullNameCell);
+
+            const genreNameCell = document.createElement('td');
+            genreNameCell.textContent = item.genre.name;
+            row.appendChild(genreNameCell);
+
+            const commentsCell = document.createElement('td');
+            const commentsLink = document.createElement('a');
+            commentsLink.href = `/comments?book_id=${bookId}`;
+            commentsLink.textContent = 'Comments';
+            commentsCell.appendChild(commentsLink);
+            row.appendChild(commentsCell);
+
+            const editBookCell = document.createElement('td');
+            const editBookLink = document.createElement('a');
+            editBookLink.href = `/edit/book?id=${bookId}`;
+            editBookLink.textContent = 'Edit';
+            editBookCell.appendChild(editBookLink);
+            row.appendChild(editBookCell);
+
+            const deleteBookCell = document.createElement('td');
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "submit-btn";
+
+            const deleteApiUrl = `/api/v1/book/${bookId}`;
+            deleteButton.addEventListener('click', async () => {
+                const response = await fetch(deleteApiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    }
+                });
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    console.error('Delete failed:', response.status);
+                    alert('Error deleting book');
+                }
+            });
+
+            deleteBookCell.appendChild(deleteButton);
+            row.appendChild(deleteBookCell);
+
+            tableBody.appendChild(row);
+        }));
+</script>
+
+<div>
+    <form th:action="@{/add/book}" method="get">
+        <button type="submit">Add book</button>
+    </form>
+</div>
+</body>
+</html>
