@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <title>Add book</title>
+    <style type="text/css">
+        body {
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        input, select {
+            width: 250px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        input:read-only {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .row {
+            margin-top: 15px;
+        }
+
+        .errors {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background: #34495e;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const bookId = /*[[${bookId}]]*/ 0;
+        const apiUrl = `/api/v1/book/${bookId}`;
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+        /*]]>*/
+
+        function loadBook() {
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(book => {
+                    document.getElementById('id-input').value = book.id;
+                    document.getElementById('book-title-input').value = book.title;
+                    document.getElementById('book-author-select').value = book.author.id;
+                    document.getElementById('book-genre-select').value = book.genre.id;
+                });
+        }
+
+        function saveBook() {
+            const idInput = document.getElementById("id-input")
+            const titleInput = document.getElementById("book-title-input")
+            const authorSelect = document.getElementById("book-author-select")
+            const genreSelect = document.getElementById("book-genre-select")
+            const book = {
+                id: idInput.value,
+                title: titleInput.value,
+                author: {
+                    id: authorSelect.value,
+                    fullName: authorSelect.text
+                },
+                genre: {
+                    id: genreSelect.value,
+                    name: genreSelect.text
+                }
+            }
+            fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(book)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Error update book');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error network');
+                });
+        }
+    </script>
+</head>
+
+<body onload="loadBook()">
+
+<form id="edit-book-form" th:object="${book}">
+    <h3>Book Info:</h3>
+
+    <div class="row">
+        <input id="id-input" type="text" readonly="readonly" value="0"/>
+    </div>
+
+    <div class="row">
+        <input id="book-title-input" name="title" type="text" value="Default Title"/>
+    </div>
+
+    <div class="row">
+        <select class="form-control" id="book-author-select">
+            <option value="" disabled selected>Select author</option>
+            <option th:each="author : ${authors}"
+                    th:value="${author.id}"
+                    th:text="${author.fullName}">
+            </option>
+        </select>
+    </div>
+
+    <div class="row">
+        <select class="form-control" id="book-genre-select">
+            <option value="" disabled selected>Select genre</option>
+            <option th:each="genre : ${genres}"
+                    th:value="${genre.id}"
+                    th:text="${genre.name}">
+            </option>
+        </select>
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="saveBook()">Save</button>
+        <a href="books.html" th:href="@{/}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>
