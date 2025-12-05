@@ -2,6 +2,9 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <title>List of all books</title>
     <style type="text/css">
         body {
@@ -131,6 +134,9 @@
 
     const tableBody = document.getElementById('booksTable');
 
+    const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+    const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
     fetch(url)
         .then(response => response.json())
         .then(data => data.forEach(item => {
@@ -176,9 +182,11 @@
             const deleteApiUrl = `/api/v1/book/${bookId}`;
             deleteButton.addEventListener('click', async () => {
                 const response = await fetch(deleteApiUrl, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        [csrfHeader]: csrfToken
+                    }
                 });
-
                 if (response.ok) {
                     window.location.href = '/';
                 } else {

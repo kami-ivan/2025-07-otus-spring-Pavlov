@@ -43,7 +43,7 @@ public class GenreControllerTest {
 
     @DisplayName("должен вернуть корректный список жанров")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnCorrectGenresList() throws Exception {
         when(genreService.findAll()).thenReturn(genreDtos);
 
@@ -54,7 +54,7 @@ public class GenreControllerTest {
 
     @DisplayName("должен вернуть ожидаемую ошибку когда жанры не найдены")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnExpectedErrorWhenGenresNotFound() throws Exception {
         when(genreService.findAll()).thenReturn(List.of());
 

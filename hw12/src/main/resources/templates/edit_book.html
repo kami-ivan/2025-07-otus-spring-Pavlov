@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Add book</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <style type="text/css">
         body {
             padding: 40px;
@@ -76,6 +80,9 @@
         /*<![CDATA[*/
         const bookId = /*[[${bookId}]]*/ 0;
         const apiUrl = `/api/v1/book/${bookId}`;
+
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
         /*]]>*/
 
         function loadBook() {
@@ -106,17 +113,26 @@
                     name: genreSelect.text
                 }
             }
-            fetch("/api/v1/book", {
-                method: 'POST',
+            fetch(apiUrl, {
+                method: 'PUT',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
                 },
                 body: JSON.stringify(book)
             })
-                .then(data => {
-                    window.location.href = '/';
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Error update book');
+                    }
                 })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error network');
+                });
         }
     </script>
 </head>

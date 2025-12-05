@@ -55,7 +55,7 @@ public class BookControllerTest {
 
     @DisplayName("должен вернуть корректный список книг")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnCorrectABooksList() throws Exception {
         when(bookService.findAll()).thenReturn(bookDtos);
 
@@ -65,7 +65,7 @@ public class BookControllerTest {
 
     @DisplayName("должен вернуть корректную книгу")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnCorrectBook() throws Exception {
         when(bookService.findById(1L)).thenReturn(Optional.ofNullable(bookDtos.get(0)));
 
@@ -77,7 +77,7 @@ public class BookControllerTest {
 
     @DisplayName("должен вернуть ожидаемую ошибку когда книга не найдена")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnExpectedErrorWhenBookNotFound() throws Exception {
         when(bookService.findById(1L)).thenReturn(Optional.empty());
 
@@ -89,7 +89,7 @@ public class BookControllerTest {
 
     @DisplayName("должен корректно сохранить книгу")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldCorrectSaveBook() throws Exception {
         Book book = new Book(1L, "Test_NewBook_1",
                 authorDto.toDomainObject(),
@@ -105,7 +105,7 @@ public class BookControllerTest {
 
     @DisplayName("должен корректно удалить книгу")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldCorrectDeleteBook() throws Exception {
         String url = "/api/v1/book/" + 1L;
         mvc.perform(delete(url).with(csrf())).andExpect(status().isOk());

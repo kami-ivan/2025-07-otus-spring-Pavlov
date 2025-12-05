@@ -43,7 +43,7 @@ public class AuthorControllerTest {
 
     @DisplayName("должен вернуть корректный список авторов")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnCorrectAuthorsList() throws Exception {
         when(authorService.findAll()).thenReturn(authorDtos);
 
@@ -54,7 +54,7 @@ public class AuthorControllerTest {
 
     @DisplayName("должен вернуть ожидаемую ошибку когда авторы не найдены")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnExpectedErrorWhenAuthorsNotFound() throws Exception {
         when(authorService.findAll()).thenReturn(List.of());
 

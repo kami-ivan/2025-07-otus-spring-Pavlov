@@ -49,7 +49,7 @@ public class CommentControllerTest {
 
     @DisplayName("должен вернуть корректный список комментариев")
     @Test
-    @WithMockUser(username = "testuser", roles = {"USER"})
+    @WithMockUser(username = "testuser")
     void shouldReturnCorrectCommentsList() throws Exception {
         String url = "/api/v1/book/" + 1 + "/comment";
 
