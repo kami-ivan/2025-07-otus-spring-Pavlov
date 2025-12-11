@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add book</title>
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <style type="text/css">
+        body {
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        input, select {
+            width: 250px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        input:read-only {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .row {
+            margin-top: 15px;
+        }
+
+        .errors {
+            color: #dc3545;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        button {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        button:hover {
+            background: #34495e;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+    </style>
+
+    <script>
+        function saveBook() {
+            const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+            const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+            const idInput = document.getElementById("id-input")
+            const titleInput = document.getElementById("book-title-input")
+            const authorSelect = document.getElementById("book-author-select")
+            const genreSelect = document.getElementById("book-genre-select")
+            const book = {
+                id: idInput.value,
+                title: titleInput.value,
+                author: {
+                    id: authorSelect.value,
+                    fullName: authorSelect.text
+                },
+                genre: {
+                    id: genreSelect.value,
+                    name: genreSelect.text
+                }
+            }
+            fetch("/api/v1/book", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    [csrfHeader]: csrfToken
+                },
+                body: JSON.stringify(book)
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/';
+                    } else {
+                        alert('Error save book');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error network');
+                });
+        }
+    </script>
+</head>
+
+<body>
+
+<form id="add-book-form" th:object="${book}">
+    <h3>New Book:</h3>
+
+    <div class="row">
+        <input id="id-input" name="id" type="text" readonly="readonly" value="0" th:field="*{id}"/>
+    </div>
+
+    <div class="row">
+        <input id="book-title-input" name="title" type="text" value="Default Title" th:field="*{title}"/>
+    </div>
+
+    <div class="row">
+        <select class="form-control" id="book-author-select" th:field="*{author.id}">
+            <option value="" disabled selected>Select author</option>
+            <option th:each="author : ${authors}"
+                    th:value="${author.id}"
+                    th:text="${author.fullName}">
+            </option>
+        </select>
+    </div>
+
+    <div class="row">
+        <select class="form-control" id="book-genre-select" th:field="*{genre.id}">
+            <option value="" disabled selected>Select genre</option>
+            <option th:each="genre : ${genres}"
+                    th:value="${genre.id}"
+                    th:text="${genre.name}">
+            </option>
+        </select>
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="saveBook()">Save</button>
+        <a href="books.html" th:href="@{/}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>
